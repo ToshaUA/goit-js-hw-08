@@ -8,18 +8,30 @@ const refs = {
   textarea: document.querySelector('.feedback-form textarea'),
   input: document.querySelector('input'),
 };
+
 const formData = {};
 
 populateTextarea();
 
 refs.form.addEventListener('input', throttle(onTextareaInput, 500));
+refs.form.addEventListener('submit', onFormSubmit);
 
-refs.form.addEventListener('submit', e => {
-  e.preventDefault();
-  e.currentTarget.reset();
-  const objData = JSON.parse(localStorage.getItem(STORAGE_KEY));
+function onFormSubmit(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const formData = new FormData(form);
+  const finalData = {};
+  for (const [key, value] of formData.entries()) {
+    if (!value) {
+      alert('Все поля должны быть заполнены!!');
+      return;
+    }
+    finalData[key] = value;
+  }
+  console.log(finalData);
+  form.reset();
   localStorage.removeItem(STORAGE_KEY);
-});
+}
 
 function onTextareaInput(e) {
   formData[e.target.name] = e.target.value;
